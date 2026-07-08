@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resume Analyzer | SkillBridge AI</title>
+
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/resume.css') }}">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>
+
+            📄 AI Resume Analyzer
+
+        </h1>
+
+        <p>
+
+            Upload your resume and receive an AI-powered ATS analysis.
+
+        </p>
+
+    </div>
+
+    <div class="upload-card">
+
+        <form action="/resume" method="POST" enctype="multipart/form-data">
+
+            <div class="upload-box">
+
+                <i class="fa-solid fa-file-arrow-up"></i>
+
+                <h2>
+
+                    Upload Resume
+
+                </h2>
+
+                <p>
+
+                    PDF or DOCX (Max 5 MB)
+
+                </p>
+
+                <input
+                    type="file"
+                    name="resume"
+                    accept=".pdf,.doc,.docx"
+                    required>
+
+            </div>
+
+            <button type="submit">
+
+                Analyze Resume
+
+            </button>
+
+        </form>
+
+    </div>
+
+    {% if score %}
+
+    <div class="result-card">
+
+        <h2>
+
+            ATS Score
+
+        </h2>
+
+        <div class="score-circle">
+
+            {{ score }}%
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    {% if suggestions %}
+
+    <div class="result-card">
+
+        <h2>
+
+            AI Suggestions
+
+        </h2>
+
+        <pre>{{ suggestions }}</pre>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+
+</html>

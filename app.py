@@ -1,132 +1,580 @@
-from flask import Flask, render_template, request
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    session,
+    flash,
+    url_for
+)
+
 from dotenv import load_dotenv
-import os
+
 from google import genai
 
-# Load environment variables
+from werkzeug.utils import secure_filename
+
+import os
+import pathlib
+import sqlite3
+
+# ==========================================
+# LOAD ENV
+# ==========================================
+
 load_dotenv()
+
+# ==========================================
+# FLASK APP
+# ==========================================
 
 app = Flask(__name__)
 
-# Gemini Client
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+app.secret_key = "skillbridge_ai_secret_key"
 
+# ==========================================
+# GEMINI
+# ==========================================
+
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+
+# ==========================================
+# DATABASE
+# ==========================================
+
+DATABASE = "database/users.db"
+
+UPLOAD_FOLDER = "uploads"
+
+ALLOWED_EXTENSIONS = {
+    "pdf",
+    "doc",
+    "docx"
+}
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+pathlib.Path(UPLOAD_FOLDER).mkdir(
+    exist_ok=True
+)
+
+# ==========================================
+# DATABASE CONNECTION
+# ==========================================
+
+def get_connection():
+
+    conn = sqlite3.connect(DATABASE)
+
+    conn.row_factory = sqlite3.Row
+
+    return conn
+
+
+def create_tables():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    CREATE TABLE IF NOT EXISTS users(
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        name TEXT,
+
+        email TEXT UNIQUE,
+
+        password TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+
+    """)
+
+    cursor.execute("""
+
+    CREATE TABLE IF NOT EXISTS reports(
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        user_id INTEGER,
+
+        career_goal TEXT,
+
+        report TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+
+    """)
+
+    conn.commit()
+
+    conn.close()
+
+
+create_tables()
+
+# ==========================================
+# HELPERS
+# ==========================================
+
+def allowed_file(filename):
+
+    return "." in filename and \
+    filename.rsplit(".",1)[1].lower() in ALLOWED_EXTENSIONS
+
+# ==========================================
+# HOME
+# ==========================================
 
 @app.route("/")
 def home():
+
     return render_template("index.html")
 
+# ==========================================
+# DASHBOARD
+# ==========================================
+
+@app.route("/dashboard")
+def dashboard():
+
+    if "user_id" not in session:
+
+        return redirect("/login")
+
+    return render_template(
+
+        "dashboard.html",
+
+        name=session["user_name"]
+
+    )
+
+# ==========================================
+# RESUME PAGE
+# ==========================================
+
+@app.route("/resume")
+def resume():
+
+    if "user_id" not in session:
+
+        return redirect("/login")
+
+    return render_template("resume.html")
+
+# ==========================================
+# AI CAREER ANALYSIS
+# ==========================================
 
 @app.route("/analyze", methods=["POST"])
 def analyze():
 
     name = request.form["name"]
+
     goal = request.form["goal"]
+
     skills = request.form["skills"]
+
     education = request.form["education"]
 
     prompt = f"""
-You are an AI Career Roadmap Generator.
 
-Student Details:
-Name: {name}
-Career Goal: {goal}
-Current Skills: {skills}
-Education: {education}
+You are SkillBridge AI.
 
-Create a VISUAL TEXT CAREER ROADMAP.
+Student Name : {name}
 
-Follow this EXACT format.
+Career Goal : {goal}
 
-══════════════════════════════════════
+Skills : {skills}
 
-🎯 CAREER GOAL
-{goal}
+Education : {education}
 
-⬇
+Generate a structured career roadmap.
 
-📍 CURRENT SKILLS
-• Mention the student's current skills
+Return sections:
 
-⬇
+🎯 Career Goal
 
-🚧 SKILL GAPS
-• List only the missing skills
+📊 Current Skills
 
-⬇
+❌ Skill Gap
 
-🗓️ LEARNING ROADMAP
+🗓️ 30-Day Learning Plan
 
-🌱 Week 1
-• 3 learning topics
+Week 1
 
-⬇
+Week 2
 
-🌿 Week 2
-• 3 learning topics
+Week 3
 
-⬇
+Week 4
 
-🌳 Week 3
-• 3 learning topics
+💻 Projects
 
-⬇
+🎤 Interview Questions
 
-🚀 Week 4
-• 3 learning topics
+📄 Resume Tips
 
-⬇
+🏆 Final Advice
 
-💻 BUILD THESE PROJECTS
-• Project 1
-• Project 2
-• Project 3
+Use bullet points.
 
-⬇
-
-🎤 INTERVIEW PREPARATION
-• Technical Questions
-• HR Questions
-
-⬇
-
-📄 RESUME TIPS
-
-⬇
-
-🏆 READY FOR INTERNSHIP
-
-══════════════════════════════════════
-
-Rules:
-- Use arrows (⬇) between every section.
-- Use bullet points.
-- Do NOT write long paragraphs.
-- Keep each section short.
-- Make it look like a roadmap, not an essay.
 """
+
     try:
+
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+
+            model="gemini-2.5-flash-lite",
+
             contents=prompt
+
         )
 
-        result = response.text
+        report = response.text
 
     except Exception as e:
 
-        result = f"""
-⚠️ Gemini AI is temporarily unavailable.
+        report = f"Error : {e}"
 
-Reason:
-{e}
-"""
+    if "user_id" in session:
+
+        conn = get_connection()
+
+        cursor = conn.cursor()
+
+        cursor.execute(
+
+            """
+
+            INSERT INTO reports
+
+            (user_id,career_goal,report)
+
+            VALUES(?,?,?)
+
+            """,
+
+            (
+
+                session["user_id"],
+
+                goal,
+
+                report
+
+            )
+
+        )
+
+        conn.commit()
+
+        conn.close()
 
     return render_template(
+
         "index.html",
-        result=result
+
+        result=report
+
+    )
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    session,
+    flash,
+    url_for
+)
+
+from dotenv import load_dotenv
+
+from google import genai
+
+from werkzeug.utils import secure_filename
+
+import os
+import pathlib
+import sqlite3
+
+# ==========================================
+# LOAD ENV
+# ==========================================
+
+load_dotenv()
+
+# ==========================================
+# FLASK APP
+# ==========================================
+
+app = Flask(__name__)
+
+app.secret_key = "skillbridge_ai_secret_key"
+
+# ==========================================
+# GEMINI
+# ==========================================
+
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+
+# ==========================================
+# DATABASE
+# ==========================================
+
+DATABASE = "database/users.db"
+
+UPLOAD_FOLDER = "uploads"
+
+ALLOWED_EXTENSIONS = {
+    "pdf",
+    "doc",
+    "docx"
+}
+
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+pathlib.Path(UPLOAD_FOLDER).mkdir(
+    exist_ok=True
+)
+
+# ==========================================
+# DATABASE CONNECTION
+# ==========================================
+
+def get_connection():
+
+    conn = sqlite3.connect(DATABASE)
+
+    conn.row_factory = sqlite3.Row
+
+    return conn
+
+
+def create_tables():
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    CREATE TABLE IF NOT EXISTS users(
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        name TEXT,
+
+        email TEXT UNIQUE,
+
+        password TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
     )
 
+    """)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+    cursor.execute("""
+
+    CREATE TABLE IF NOT EXISTS reports(
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        user_id INTEGER,
+
+        career_goal TEXT,
+
+        report TEXT,
+
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+    )
+
+    """)
+
+    conn.commit()
+
+    conn.close()
+
+
+create_tables()
+
+# ==========================================
+# HELPERS
+# ==========================================
+
+def allowed_file(filename):
+
+    return "." in filename and \
+    filename.rsplit(".",1)[1].lower() in ALLOWED_EXTENSIONS
+
+# ==========================================
+# HOME
+# ==========================================
+
+@app.route("/")
+def home():
+
+    return render_template("index.html")
+
+# ==========================================
+# DASHBOARD
+# ==========================================
+
+@app.route("/dashboard")
+def dashboard():
+
+    if "user_id" not in session:
+
+        return redirect("/login")
+
+    return render_template(
+
+        "dashboard.html",
+
+        name=session["user_name"]
+
+    )
+
+# ==========================================
+# RESUME PAGE
+# ==========================================
+
+@app.route("/resume")
+def resume():
+
+    if "user_id" not in session:
+
+        return redirect("/login")
+
+    return render_template("resume.html")
+
+# ==========================================
+# AI CAREER ANALYSIS
+# ==========================================
+
+@app.route("/analyze", methods=["POST"])
+def analyze():
+
+    name = request.form["name"]
+
+    goal = request.form["goal"]
+
+    skills = request.form["skills"]
+
+    education = request.form["education"]
+
+    prompt = f"""
+
+You are SkillBridge AI.
+
+Student Name : {name}
+
+Career Goal : {goal}
+
+Skills : {skills}
+
+Education : {education}
+
+Generate a structured career roadmap.
+
+Return sections:
+
+🎯 Career Goal
+
+📊 Current Skills
+
+❌ Skill Gap
+
+🗓️ 30-Day Learning Plan
+
+Week 1
+
+Week 2
+
+Week 3
+
+Week 4
+
+💻 Projects
+
+🎤 Interview Questions
+
+📄 Resume Tips
+
+🏆 Final Advice
+
+Use bullet points.
+
+"""
+
+    try:
+
+        response = client.models.generate_content(
+
+            model="gemini-2.5-flash-lite",
+
+            contents=prompt
+
+        )
+
+        report = response.text
+
+    except Exception as e:
+
+        report = f"Error : {e}"
+
+    if "user_id" in session:
+
+        conn = get_connection()
+
+        cursor = conn.cursor()
+
+        cursor.execute(
+
+            """
+
+            INSERT INTO reports
+
+            (user_id,career_goal,report)
+
+            VALUES(?,?,?)
+
+            """,
+
+            (
+
+                session["user_id"],
+
+                goal,
+
+                report
+
+            )
+
+        )
+
+        conn.commit()
+
+        conn.close()
+
+    return render_template(
+
+        "index.html",
+
+        result=report
+
+    )

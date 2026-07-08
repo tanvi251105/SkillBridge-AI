@@ -20,7 +20,7 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}">
+        href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 
 <body>
@@ -29,56 +29,76 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-transparent py-3">
 
-<div class="container">
+    <div class="container">
 
-<a class="navbar-brand fw-bold fs-3" href="#">
+        <a class="navbar-brand fw-bold fs-3" href="/">
 
-🚀 SkillBridge AI
+            🚀 SkillBridge AI
 
-</a>
+        </a>
 
-<button class="navbar-toggler"
-type="button"
-data-bs-toggle="collapse"
-data-bs-target="#nav">
+        <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#nav">
 
-<span class="navbar-toggler-icon"></span>
+            <span class="navbar-toggler-icon"></span>
 
-</button>
+        </button>
 
-<div class="collapse navbar-collapse" id="nav">
+        <div class="collapse navbar-collapse" id="nav">
 
-<ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto align-items-center">
 
-<li class="nav-item">
+                <li class="nav-item">
 
-<a class="nav-link" href="#">Home</a>
+                    <a class="nav-link" href="/">Home</a>
 
-</li>
+                </li>
 
-<li class="nav-item">
+                <li class="nav-item">
 
-<a class="nav-link" href="#features">Features</a>
+                    <a class="nav-link" href="#features">Features</a>
 
-</li>
+                </li>
 
-<li class="nav-item">
+                <li class="nav-item">
 
-<a class="nav-link" href="#analyze">Analyze</a>
+                    <a class="nav-link" href="#analyze">Analyze</a>
 
-</li>
+                </li>
 
-<li class="nav-item">
+                <li class="nav-item">
 
-<a class="nav-link" href="#sdg">SDG 8</a>
+                    <a class="nav-link" href="#sdg">SDG 8</a>
 
-</li>
+                </li>
 
-</ul>
+                <li class="nav-item ms-3">
 
-</div>
+                    <a class="btn btn-outline-light" href="/login">
 
-</div>
+                        Login
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item ms-2">
+
+                    <a class="btn btn-primary" href="/signup">
+
+                        Sign Up
+
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
 
 </nav>
 

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | SkillBridge AI</title>
+
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+
+        <h2>🚀 SkillBridge AI</h2>
+
+    </div>
+
+    <ul>
+
+        <li class="active">
+
+            <a href="/dashboard">
+
+                <i class="fa-solid fa-house"></i>
+
+                Dashboard
+
+            </a>
+
+        </li>
+
+        <li>
+
+            <a href="#">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                Career Analysis
+
+            </a>
+
+        </li>
+
+        <li>
+
+            <a href="#">
+
+                <i class="fa-solid fa-road"></i>
+
+                Roadmap
+
+            </a>
+
+        </li>
+
+        <li>
+
+            <a href="#">
+
+                <i class="fa-solid fa-file-lines"></i>
+
+                Resume Analyzer
+
+            </a>
+
+        </li>
+
+        <li>
+
+            <a href="#">
+
+                <i class="fa-solid fa-microphone"></i>
+
+                Mock Interview
+
+            </a>
+
+        </li>
+
+        <li>
+
+            <a href="#">
+
+                <i class="fa-solid fa-graduation-cap"></i>
+
+                Quiz
+
+            </a>
+
+        </li>
+
+        <li>
+
+            <a href="/logout">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                Logout
+
+            </a>
+
+        </li>
+
+    </ul>
+
+</div>
+
+<div class="content">
+
+<div class="topbar">
+
+<div>
+
+<h1>
+
+Welcome, {{ name }} 👋
+
+</h1>
+
+<p>
+
+Track your career journey with AI.
+
+</p>
+
+</div>
+
+<div class="profile">
+
+<img src="https://ui-avatars.com/api/?name={{name}}&background=2563eb&color=fff">
+
+</div>
+
+</div>
+
+<div class="cards">
+
+<div class="card">
+
+<i class="fa-solid fa-bullseye"></i>
+
+<h3>Career Match</h3>
+
+<h2>89%</h2>
+
+<div class="progress">
+
+<div class="progress-bar" style="width:89%"></div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<i class="fa-solid fa-file"></i>
+
+<h3>Resume Score</h3>
+
+<h2>78%</h2>
+
+<div class="progress">
+
+<div class="progress-bar" style="width:78%"></div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<i class="fa-solid fa-microphone"></i>
+
+<h3>Interview Ready</h3>
+
+<h2>71%</h2>
+
+<div class="progress">
+
+<div class="progress-bar" style="width:71%"></div>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<i class="fa-solid fa-laptop-code"></i>
+
+<h3>Projects</h3>
+
+<h2>5</h2>
+
+<div class="progress">
+
+<div class="progress-bar" style="width:65%"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="dashboard-grid">
+
+<div class="panel">
+
+<h2>
+
+📅 Recent Activity
+
+</h2>
+
+<ul class="activity">
+
+<li>
+
+✅ Created AI Roadmap
+
+<span>Today</span>
+
+</li>
+
+<li>
+
+📄 Resume Analyzed
+
+<span>Yesterday</span>
+
+</li>
+
+<li>
+
+🎤 Completed Interview
+
+<span>2 Days Ago</span>
+
+</li>
+
+<li>
+
+🧠 Attempted Quiz
+
+<span>3 Days Ago</span>
+
+</li>
+
+</ul>
+
+</div>
+
+<div class="panel">
+
+<h2>
+
+⚡ Quick Actions
+
+</h2>
+
+<div class="actions">
+
+<a href="#" class="action-btn">
+
+<i class="fa-solid fa-chart-line"></i>
+
+Generate Roadmap
+
+</a>
+
+<a href="#" class="action-btn">
+
+<i class="fa-solid fa-file"></i>
+
+Analyze Resume
+
+</a>
+
+<a href="#" class="action-btn">
+
+<i class="fa-solid fa-microphone"></i>
+
+Start Interview
+
+</a>
+
+<a href="#" class="action-btn">
+
+<i class="fa-solid fa-graduation-cap"></i>
+
+Take Quiz
+
+</a>
+
+</div>
+
+</div>
+
+</div>
+<div class="dashboard-grid">
+
+    <div class="panel">
+
+        <h2>
+
+            📊 Skill Progress
+
+        </h2>
+
+        <div class="skill">
+
+            <span>Python</span>
+
+            <div class="progress">
+
+                <div class="progress-bar" style="width:90%"></div>
+
+            </div>
+
+        </div>
+
+        <div class="skill">
+
+            <span>HTML & CSS</span>
+
+            <div class="progress">
+
+                <div class="progress-bar" style="width:95%"></div>
+
+            </div>
+
+        </div>
+
+        <div class="skill">
+
+            <span>JavaScript</span>
+
+            <div class="progress">
+
+                <div class="progress-bar" style="width:75%"></div>
+
+            </div>
+
+        </div>
+
+        <div class="skill">
+
+            <span>Flask</span>
+
+            <div class="progress">
+
+                <div class="progress-bar" style="width:65%"></div>
+
+            </div>
+
+        </div>
+
+        <div class="skill">
+
+            <span>Machine Learning</span>
+
+            <div class="progress">
+
+                <div class="progress-bar" style="width:35%"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>
+
+            🤖 AI Recommendations
+
+        </h2>
+
+        <div class="recommendation">
+
+            <h3>
+
+                Learn Flask Authentication
+
+            </h3>
+
+            <p>
+
+                Complete login and session management before moving to deployment.
+
+            </p>
+
+        </div>
+
+        <div class="recommendation">
+
+            <h3>
+
+                Build Portfolio Projects
+
+            </h3>
+
+            <p>
+
+                Add Resume Analyzer and Mock Interview modules.
+
+            </p>
+
+        </div>
+
+        <div class="recommendation">
+
+            <h3>
+
+                Practice Interviews
+
+            </h3>
+
+            <p>
+
+                Solve Python and SQL interview questions daily.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="panel reports">
+
+    <h2>
+
+        📄 Recent Reports
+
+    </h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Report</th>
+
+                <th>Date</th>
+
+                <th>Status</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            <tr>
+
+                <td>Career Analysis</td>
+
+                <td>Today</td>
+
+                <td><span class="badge success">Completed</span></td>
+
+            </tr>
+
+            <tr>
+
+                <td>Resume Score</td>
+
+                <td>Yesterday</td>
+
+                <td><span class="badge warning">Pending</span></td>
+
+            </tr>
+
+            <tr>
+
+                <td>Mock Interview</td>
+
+                <td>2 Days Ago</td>
+
+                <td><span class="badge success">Completed</span></td>
+
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<div class="panel">
+
+    <h2>
+
+        🎯 Weekly Goals
+
+    </h2>
+
+    <ul class="activity">
+
+        <li>
+
+            ✅ Complete Flask Authentication
+
+        </li>
+
+        <li>
+
+            ⏳ Build Resume Analyzer
+
+        </li>
+
+        <li>
+
+            ⏳ Learn SQL Basics
+
+        </li>
+
+        <li>
+
+            ⏳ Complete 2 AI Projects
+
+        </li>
+
+    </ul>
+
+</div>
+
+<footer class="footer">
+
+    <p>
+
+        © 2026 SkillBridge AI • Powered by Flask & Gemini AI
+
+    </p>
+
+</footer>
+
+</div>
+
+</body>
+
+</html>
